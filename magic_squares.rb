@@ -2,74 +2,22 @@ require 'pry'
 
 # Complete the formingMagicSquare function below.
 def formingMagicSquare(s)
-    max_changes = 0
-    magic_square_found = isMagicSquare?(s)
+    all_possible_magic_squares = [
+            [[8, 1, 6], [3, 5, 7], [4, 9, 2]],
+            [[6, 1, 8], [7, 5, 3], [2, 9, 4]],
+            [[4, 9, 2], [3, 5, 7], [8, 1, 6]],
+            [[2, 9, 4], [7, 5, 3], [6, 1, 8]],
+            [[8, 3, 4], [1, 5, 9], [6, 7, 2]],
+            [[4, 3, 8], [9, 5, 1], [2, 7, 6]],
+            [[6, 7, 2], [1, 5, 9], [8, 3, 4]],
+            [[2, 7, 6], [9, 5, 1], [4, 3, 8]],
+    ]
 
-    while(!magic_square_found) do
-        max_changes += 1
-        magic_square_found = magicSquaresWithChanges(s, max_changes)
-    end
-
-    max_changes
-end
-
-# Try all numbers and change by 1
-def magicSquaresWithChanges(s, max_changes)
-    if max_changes == 1
-        squaresPlusOne(s).each do |new_square|
-            return new_square if isMagicSquare?(new_square)
+    changes = all_possible_magic_squares.map do |magic_square|
+        magic_square.flatten.zip(s.flatten).reduce(0) do |tot, values_of_squares|
+            tot + (values_of_squares[0] - values_of_squares[1]).abs
         end
-        squaresMinusOne(s).each do |new_square|
-            return new_square if isMagicSquare?(new_square)
-        end
-        return false
-    else
-        (squaresPlusOne(s) + squaresMinusOne(s)).each do |square|
-            found_magic_square = magicSquaresWithChanges(square, max_changes - 1)
-            return found_magic_square if found_magic_square
-        end
-    end
-
-    return false
-end
-
-def squaresPlusOne(s)
-    squares = []
-    (0..2).each do |x|
-        (0..2).each do |y|
-            new_square = Marshal.load(Marshal.dump(s))
-            new_square[x][y] = new_square[x][y] + 1
-            squares << new_square
-        end
-    end
-    squares
-end
-
-def squaresMinusOne(s)
-    squares = []
-    (0..2).each do |x|
-        (0..2).each do |y|
-            new_square = Marshal.load(Marshal.dump(s))
-            new_square[x][y] = new_square[x][y] - 1
-            squares << new_square
-        end
-    end
-    squares
-end
-
-def isMagicSquare?(s)
-    first_row = s[0][0] + s[0][1] + s[0][2]
-    second_row = s[1][0] + s[1][1] + s[1][2]
-    third_row = s[2][0] + s[2][1] + s[2][2]
-
-    first_column = s[0][0] + s[1][0] + s[2][0]
-    second_column = s[0][1] + s[1][1] + s[2][1]
-    third_column = s[0][2] + s[1][2] + s[2][2]
-
-    first_diagonal = s[0][0] + s[1][1] + s[2][2]
-    second_diagonal = s[2][0] + s[1][1] + s[0][2]
-
-    [first_row, second_row, third_row, first_column, second_column, third_column, first_diagonal, second_diagonal].uniq.length == 1
+    end.min
 end
 
 formingMagicSquare([
